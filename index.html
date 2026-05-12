@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Grade 1 Revision with Miss Numby!</title>
+<style>
+/* ───────────────────────────────────────────────
+   FONT: Century Gothic (primary), Arial fallback.
+   Grade 1 learners can read this clean sans-serif
+   easily — no cursive fonts anywhere.
+   ─────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;font-family:"Century Gothic","CenturyGothic","AppleGothic",Arial,sans-serif}
+html,body{min-height:100vh;overflow-x:hidden}
+
+body{
+  background:linear-gradient(170deg,#1976D2 0%,#42A5F5 25%,#64B5F6 50%,#90CAF9 75%,#BBDEFB 100%);
+  display:flex;flex-direction:column;align-items:center;
+  padding:10px 8px 30px;position:relative;min-height:100vh;
+}
+
+/* ── FLOATING BACKGROUND NUMBERS (0–10) ── */
+.float-deco{position:fixed;pointer-events:none;opacity:0.18;font-weight:900;font-size:clamp(40px,8vw,80px);z-index:0;animation:floatAround 18s ease-in-out infinite;color:#FFFFFF}
+@keyframes floatAround{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-20px) rotate(8deg)}50%{transform:translateY(5px) rotate(-5deg)}75%{transform:translateY(-12px) rotate(3deg)}}
+
+/* ── PASSWORD SCREEN ── */
+#passwordScreen{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:linear-gradient(170deg,#1976D2 0%,#42A5F5 25%,#64B5F6 50%,#90CAF9 75%,#BBDEFB 100%);
+  display:flex;align-items:center;justify-content:center;z-index:9999;
+}
+.pw-card{background:rgba(255,255,255,0.97);border-radius:24px;padding:36px 28px;max-width:380px;width:90%;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.2)}
+.pw-card h2{color:#0D47A1;font-size:22px;margin-bottom:6px;font-weight:800}
+.pw-card p{font-weight:700;color:#1565C0;font-size:14px;margin-bottom:18px}
+.pw-input{width:80%;padding:14px;border:3px solid #42A5F5;border-radius:14px;font-size:22px;text-align:center;color:#0D47A1;outline:none;transition:border-color 0.3s;font-weight:800}
+.pw-input:focus{border-color:#1976D2}
+.pw-btn{display:block;margin:16px auto 0;padding:12px 40px;border:none;border-radius:50px;font-size:18px;color:white;cursor:pointer;background:linear-gradient(135deg,#43A047,#66BB6A);box-shadow:0 4px 16px rgba(67,160,71,0.4);transition:transform 0.2s;font-weight:800}
+.pw-btn:hover{transform:scale(1.05)}
+.pw-error{color:#E53935;font-weight:800;font-size:13px;margin-top:10px;min-height:20px}
+
+/* ── MAIN CONTAINER ── */
+#app{width:100%;max-width:760px;position:relative;z-index:1;display:none}
+
+/* ── HEADER ── */
+.header{background:linear-gradient(135deg,#1565C0,#42A5F5);border-radius:20px;padding:14px 20px;margin-bottom:14px;text-align:center;box-shadow:0 6px 28px rgba(21,101,192,0.4)}
+.header h1{font-size:clamp(16px,3.5vw,24px);color:#fff;text-shadow:2px 2px 4px rgba(0,0,0,0.2);font-weight:900}
+.header p{font-size:clamp(11px,2vw,14px);color:#E3F2FD;font-weight:700;margin-top:4px}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{height:10px;background:rgba(255,255,255,0.3);border-radius:50px;margin:10px 0 14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#FFD600,#66BB6A);border-radius:50px;transition:width 0.8s ease;width:0%}
+
+/* ── PAUSE BUTTON ── */
+#pauseBtn{
+  position:fixed;bottom:20px;right:20px;z-index:1000;
+  width:60px;height:60px;border-radius:50%;border:none;
+  background:linear-gradient(135deg,#0D47A1,#1976D2);
+  color:white;font-size:24px;cursor:pointer;
+  box-shadow:0 6px 24px rgba(13,71,161,0.5);
+  transition:transform 0.2s;display:none;
+}
+#pauseBtn:hover{transform:scale(1.1)}
+#pauseBtn.paused{background:linear-gradient(135deg,#2E7D32,#66BB6A);box-shadow:0 6px 24px rgba(46,125,50,0.5)}
+.pause-label{position:fixed;bottom:85px;right:12px;z-index:1000;font-size:11px;color:white;text-shadow:1px 1px 3px rgba(0,0,0,0.5);display:none;text-align:center;width:76px;font-weight:800}
+
+/* ── SPEECH BUBBLE ── */
+.speech-area{background:linear-gradient(135deg,#FFF8E1,#FFF3C4);border:3px solid #FFB300;border-radius:8px 20px 20px 20px;padding:16px 20px;margin-bottom:14px;min-height:70px;box-shadow:0 4px 16px rgba(255,179,0,0.3)}
+.speech-label{font-size:12px;color:#0D47A1;margin-bottom:6px;display:flex;align-items:center;gap:6px;font-weight:800}
+.speech-text{font-size:clamp(14px,2.2vw,17px);color:#0D47A1;font-weight:700;line-height:1.7}
+
+/* ── ACTIVITY CARD ── */
+.activity-card{background:rgba(255,255,255,0.95);border-radius:20px;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,0.1);margin-bottom:14px}
+.activity-title{font-size:clamp(15px,2.8vw,22px);color:#0D47A1;margin-bottom:16px;text-align:center;padding:8px 16px;background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:12px;font-weight:900}
+
+/* ── START SCREEN ── */
+.start-screen{text-align:center;padding:20px}
+.start-screen h2{color:#0D47A1;font-size:clamp(20px,4vw,28px);margin-bottom:10px;font-weight:900}
+.start-screen p{font-weight:700;color:#1565C0;margin-top:10px;font-size:clamp(13px,2.2vw,16px);line-height:1.6}
+.start-btn{display:inline-block;margin-top:16px;padding:16px 48px;border:none;border-radius:50px;font-size:clamp(18px,3.5vw,24px);color:white;cursor:pointer;background:linear-gradient(135deg,#43A047,#66BB6A);box-shadow:0 6px 24px rgba(67,160,71,0.5);transition:transform 0.2s;animation:pulse 2s ease-in-out infinite;font-weight:900}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.start-btn:hover{transform:scale(1.08)}
+.thinking-cap{font-size:60px;margin-bottom:10px;animation:bounceIn 1s ease}
+@keyframes bounceIn{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+/* ── ROTATE HINT ── */
+.rotate-hint{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border:3px solid #1976D2;border-radius:16px;padding:14px 18px;margin:14px 0;text-align:center;font-weight:800;color:#0D47A1;font-size:clamp(13px,2.2vw,16px);line-height:1.5}
+.rotate-hint .rotate-icon{display:inline-block;font-size:28px;animation:rotateIcon 2.5s ease-in-out infinite;vertical-align:middle;margin-right:6px}
+@keyframes rotateIcon{0%,100%{transform:rotate(0deg)}50%{transform:rotate(90deg)}}
+
+/* ─────────────────────────────────────────────
+   ACTIVITY 1 — NUMBER LINES (same structure as
+   the previous plus/minus videos)
+   ───────────────────────────────────────────── */
+.sum-display{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0;padding:16px;background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:16px}
+.sum-num{font-size:clamp(32px,7vw,48px);color:#0D47A1;font-weight:900}
+.sum-op{font-size:clamp(32px,7vw,48px);color:#1565C0;font-weight:900}
+.sum-input{width:clamp(55px,12vw,75px);height:clamp(55px,12vw,75px);border:3px dashed #42A5F5;border-radius:14px;font-size:clamp(28px,6vw,42px);text-align:center;color:#0D47A1;background:white;outline:none;transition:all 0.3s;font-weight:900}
+.sum-input:focus{border-color:#1976D2;background:#E3F2FD}
+.sum-input.correct{border-color:#43A047;background:#E8F5E9;color:#2E7D32;border-style:solid}
+.sum-input.wrong{border-color:#E53935;background:#FFEBEE;color:#C62828;animation:shake 0.4s ease}
+.sum-input::-webkit-outer-spin-button,.sum-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.sum-input[type=number]{-moz-appearance:textfield}
+/* Operator input — same styling as number boxes, but border colour
+   is pink so the child sees it as "different" from the number boxes,
+   reminding them to type the operator (+ or −) here. */
+.sum-op-input{border-color:#EC407A}
+.sum-op-input:focus{border-color:#C2185B;background:#FCE4EC}
+@keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}100%{transform:translateX(0)}}
+
+.answer-input{width:clamp(55px,12vw,75px);height:clamp(55px,12vw,75px);border:3px dashed #FFA726;border-radius:14px;font-size:clamp(28px,6vw,42px);text-align:center;color:#E65100;background:white;outline:none;transition:all 0.3s;font-weight:900}
+.answer-input:focus{border-color:#FF6F00;background:#FFF8E1}
+.answer-input.correct{border-color:#43A047;background:#E8F5E9;color:#2E7D32;border-style:solid}
+.answer-input.wrong{border-color:#E53935;background:#FFEBEE;color:#C62828;animation:shake 0.4s ease}
+.answer-input::-webkit-outer-spin-button,.answer-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.answer-input[type=number]{-moz-appearance:textfield}
+
+/* ── NUMBER LINE WRAP ── */
+.numberline-wrap{margin:20px 0;padding:14px 6px;background:#FFFFFF;border-radius:16px;box-shadow:inset 0 0 0 2px #F5F5F5;overflow:hidden}
+.numberline-svg{width:100%;height:auto;display:block;max-height:280px}
+
+/* ── TRY-AGAIN HINT ── */
+.try-again-hint{font-size:13px;color:#E53935;margin-top:8px;text-align:center;background:#FFEBEE;padding:8px;border-radius:10px;border:2px solid #FFCDD2;font-weight:800}
+
+/* ── BUTTONS ── */
+.go-btn{padding:12px 32px;border:none;border-radius:50px;background:linear-gradient(135deg,#43A047,#66BB6A);color:white;font-size:clamp(15px,2.5vw,18px);cursor:pointer;box-shadow:0 4px 14px rgba(67,160,71,0.4);transition:transform 0.15s;display:block;margin:12px auto 0;font-weight:900}
+.go-btn:hover{transform:scale(1.05)}
+.go-btn:disabled{opacity:0.4;cursor:default;transform:none}
+
+.next-btn{padding:14px 40px;border:none;border-radius:50px;background:linear-gradient(135deg,#1565C0,#42A5F5);color:white;font-size:clamp(16px,3vw,20px);cursor:pointer;box-shadow:0 6px 20px rgba(21,101,192,0.4);transition:transform 0.2s;display:block;margin:14px auto 0;font-weight:900}
+.next-btn:hover{transform:scale(1.06)}
+
+/* ── NUMBER LINE SVG STYLES ── */
+.nl-tick{stroke:#1A1A1A;stroke-width:2}
+.nl-axis{stroke:#1A1A1A;stroke-width:2.5;fill:none}
+.nl-num{font-family:"Century Gothic","CenturyGothic","AppleGothic",Arial,sans-serif;font-weight:900;font-size:18px;fill:#1A1A1A;text-anchor:middle}
+.nl-tap-circle{fill:transparent;cursor:pointer}
+.nl-blue-arc{stroke:#1976D2;stroke-width:4.5;fill:none;stroke-linecap:round}
+.nl-pink-arc{stroke:#EC407A;stroke-width:4.5;fill:none;stroke-linecap:round}
+.nl-arrowhead-blue{fill:#1976D2}
+.nl-arrowhead-pink{fill:#EC407A}
+.nl-circle-answer{stroke:#EC407A;stroke-width:3.5;fill:none}
+
+@keyframes drawArc{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+.nl-blue-arc.draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:drawArc 0.9s ease-out forwards}
+.nl-pink-arc.draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:drawArc 0.55s ease-out forwards}
+.nl-arrowhead-blue.appear,.nl-arrowhead-pink.appear{opacity:0;animation:fadeIn 0.3s ease-out 0.7s forwards}
+.nl-arrowhead-pink.appear-quick{opacity:0;animation:fadeIn 0.25s ease-out 0.5s forwards}
+.nl-circle-answer.draw{stroke-dasharray:200;stroke-dashoffset:200;animation:drawArc 0.7s ease-out forwards}
+@keyframes fadeIn{to{opacity:1}}
+
+/* ─────────────────────────────────────────────
+   ACTIVITY 2 — ODD / EVEN
+   Numbers in boxes — green when correct (even),
+   red when wrong (odd). Wrong stays red, no second try.
+   ───────────────────────────────────────────── */
+.oddeven-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:12px;
+  margin:20px 0;
+  padding:14px;
+}
+@media(max-width:560px){
+  .oddeven-grid{grid-template-columns:repeat(5,1fr);gap:8px;padding:8px}
+}
+.oe-box{
+  aspect-ratio:1/1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:white;
+  border:3px solid #1976D2;
+  border-radius:14px;
+  font-size:clamp(24px,5vw,42px);
+  color:#0D47A1;
+  cursor:pointer;
+  transition:transform 0.15s,background 0.3s,border-color 0.3s;
+  box-shadow:0 4px 12px rgba(25,118,210,0.2);
+  user-select:none;
+  font-weight:900;
+}
+.oe-box:hover{transform:scale(1.06)}
+.oe-box.correct{background:#A5D6A7;border-color:#43A047;color:#1B5E20;animation:popGreen 0.4s ease;cursor:default}
+.oe-box.wrong{background:#EF9A9A;border-color:#E53935;color:#B71C1C;animation:popRed 0.4s ease;cursor:default}
+@keyframes popGreen{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes popRed{0%{transform:scale(1)}25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-3px)}100%{transform:scale(1)}}
+
+.oe-status{
+  text-align:center;
+  margin-top:14px;
+  padding:10px;
+  background:linear-gradient(135deg,#E3F2FD,#BBDEFB);
+  border-radius:12px;
+  font-size:clamp(14px,2.3vw,17px);
+  color:#0D47A1;
+  font-weight:800;
+}
+
+/* ─────────────────────────────────────────────
+   ACTIVITY 3 — DOUBLING
+   ───────────────────────────────────────────── */
+.double-list{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin:20px 0;
+  align-items:center;
+}
+.double-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  padding:14px 18px;
+  background:linear-gradient(135deg,#FFFFFF,#F1F8FF);
+  border:3px solid #1976D2;
+  border-radius:16px;
+  min-width:260px;
+  width:90%;
+  max-width:420px;
+  box-shadow:0 4px 10px rgba(25,118,210,0.15);
+}
+.double-num{
+  font-size:clamp(32px,6vw,46px);
+  color:#0D47A1;
+  font-weight:900;
+  min-width:60px;
+  text-align:center;
+}
+.double-arrow{
+  font-size:clamp(28px,5vw,40px);
+  color:#1565C0;
+  font-weight:900;
+}
+.double-input{
+  /* Wide enough to comfortably hold 2-digit answers like 10
+     without the digits clipping or the mobile keyboard
+     mangling the value. */
+  width:clamp(90px,18vw,120px);
+  height:clamp(60px,12vw,80px);
+  border:3px dashed #FFA726;
+  border-radius:14px;
+  font-size:clamp(28px,5.5vw,40px);
+  text-align:center;
+  color:#E65100;
+  background:white;
+  outline:none;
+  transition:all 0.3s;
+  font-weight:900;
+  padding:0 4px;
+  letter-spacing:1px;
+}
+.double-input:focus{border-color:#FF6F00;background:#FFF8E1}
+.double-input.correct{border-color:#43A047;background:#A5D6A7;color:#1B5E20;border-style:solid;animation:popGreen 0.4s ease}
+.double-input.wrong{border-color:#E53935;background:#EF9A9A;color:#B71C1C;border-style:solid;animation:popRed 0.4s ease}
+.double-input::-webkit-outer-spin-button,.double-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.double-input[type=number]{-moz-appearance:textfield}
+
+.double-instruction{
+  text-align:center;
+  font-size:clamp(15px,2.5vw,20px);
+  color:#0D47A1;
+  margin:14px 0;
+  font-weight:900;
+  padding:10px 16px;
+  background:linear-gradient(135deg,#FFF8E1,#FFE0B2);
+  border-radius:12px;
+}
+
+.parent-tip-box{margin-top:20px;padding:18px;background:linear-gradient(135deg,#E1F5FE,#B3E5FC);border:3px solid #29B6F6;border-radius:16px;box-shadow:0 4px 14px rgba(41,182,246,0.2)}
+.parent-tip-header{font-size:clamp(15px,2.5vw,18px);color:#01579B;margin-bottom:10px;text-align:center;font-weight:900}
+.parent-tip-text{font-weight:700;color:#0D3F5C;font-size:clamp(13px,2vw,15px);line-height:1.7}
+
+/* ── RESULTS ── */
+.results-card{background:rgba(255,255,255,0.97);border-radius:20px;padding:24px;box-shadow:0 8px 32px rgba(0,0,0,0.1);text-align:center}
+.results-card h2{font-size:clamp(20px,4vw,28px);color:#0D47A1;margin-bottom:12px;font-weight:900}
+.results-stars{font-size:50px;margin:14px 0;animation:bounceIn 1s ease}
+.parent-message{margin-top:18px;padding:18px;background:#FFF8E1;border-radius:14px;border:2px solid #FFB300;text-align:left;font-size:clamp(13px,2vw,15px);font-weight:700;color:#5D4037;line-height:1.7}
+
+/* ── SCENE MANAGEMENT ── */
+.scene{display:none}
+.scene.active{display:block}
+</style>
+</head>
+<body>
+
+<!-- Floating background numbers between 0 and 10 -->
+<div class="float-deco" style="top:6%;left:4%;animation-delay:0s">3</div>
+<div class="float-deco" style="top:18%;right:6%;animation-delay:2s">7</div>
+<div class="float-deco" style="top:40%;left:3%;animation-delay:4s">1</div>
+<div class="float-deco" style="top:60%;right:5%;animation-delay:6s">9</div>
+<div class="float-deco" style="top:78%;left:8%;animation-delay:8s">5</div>
+<div class="float-deco" style="top:30%;right:10%;animation-delay:10s">10</div>
+
+<!-- PASSWORD SCREEN -->
+<div id="passwordScreen">
+  <div class="pw-card">
+    <div style="font-size:48px;margin-bottom:10px">🔒</div>
+    <h2>Akili Learning</h2>
+    <p>Grade 1 — Revision</p>
+    <input type="password" class="pw-input" id="pwInput" placeholder="Password" maxlength="20" autocomplete="off">
+    <button class="pw-btn" onclick="checkPassword()">Enter</button>
+    <div class="pw-error" id="pwError"></div>
+  </div>
+</div>
+
+<!-- PAUSE BUTTON -->
+<button id="pauseBtn" onclick="togglePause()">⏸️</button>
+<div class="pause-label" id="pauseLabel">Pause</div>
+
+<div id="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Grade 1 Revision with Miss Numby!</h1>
+    <p>Number Lines • Odd &amp; Even • Doubling</p>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+  <!-- SPEECH BUBBLE -->
+  <div class="speech-area">
+    <div class="speech-label">🎙️ Miss Numby says:</div>
+    <div class="speech-text" id="speechText">Getting ready...</div>
+  </div>
+
+  <!-- ═══ START SCENE ═══ -->
+  <div class="scene active" id="scene-start">
+    <div class="activity-card start-screen">
+      <div class="thinking-cap">🎓</div>
+      <h2>Hello, super stars!</h2>
+      <p>
+        Today we are going to do <strong style="color:#0D47A1">revision</strong>!<br>
+        We will practise:<br>
+        🔢 Number lines &nbsp;•&nbsp; ⚖️ Odd &amp; Even &nbsp;•&nbsp; ✋ Doubling
+      </p>
+      <p style="margin-top:14px"><strong style="color:#0D47A1">Mum or Dad,</strong> please sit with your child to help.</p>
+      <div class="rotate-hint">
+        <span class="rotate-icon">📱</span>
+        Please turn your phone <strong>sideways</strong><br>(auto-rotate ON) for the best view!
+      </div>
+      <button class="start-btn" id="startBtn" onclick="beginLesson()">Let's Go!</button>
+    </div>
+  </div>
+
+  <!-- ═══ LESSON SCENE (all activities use this) ═══ -->
+  <div class="scene" id="scene-lesson">
+    <div class="activity-card">
+      <div class="activity-title" id="lessonTitle">Activity 1: Number Lines</div>
+      <div id="lessonContent"></div>
+    </div>
+  </div>
+
+  <!-- ═══ RESULTS SCENE ═══ -->
+  <div class="scene" id="scene-results">
+    <div class="results-card">
+      <div class="results-stars">⭐🌟⭐🌟⭐</div>
+      <h2>Wonderful work, super star!</h2>
+      <p style="font-size:clamp(16px,3vw,20px);color:#1B5E20;margin:14px 0;font-weight:800">You finished all the revision activities!</p>
+      <div class="parent-message">
+        <strong style="color:#0D47A1;font-size:1.1em">📚 Note for Parents:</strong><br><br>
+        Please go through any answers that were <strong>incorrect</strong> with your child and explain them.
+        Then let your child do this activity again to practise some more.<br><br>
+        For doubling: encourage your child to use their <strong>fingers</strong> correctly.<br>
+        For odd and even: remind your child that every "friend has a partner" for even numbers.<br>
+        For number lines: blue jump first, pink hops next, circle the answer in pink.<br><br>
+        A little practice every day makes a big difference! 🌟
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// PASSWORD
+// ══════════════════════════════════════════════════════
+const MONTHLY_PASSWORD = "bprev06";
+
+function checkPassword(){
+  const input = document.getElementById('pwInput').value.trim().toLowerCase();
+  if(input === MONTHLY_PASSWORD){
+    document.getElementById('passwordScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initVoices();
+  } else {
+    document.getElementById('pwError').textContent = 'Incorrect password. Please try again.';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key === 'Enter') checkPassword(); });
+  document.getElementById('pwInput').focus();
+});
+
+// ══════════════════════════════════════════════════════
+// SPEECH SYNTHESIS — kind, excited female voice with intonation
+// (Same engine as the Plus/Minus videos. Slowed for non-home-language learners.)
+// ══════════════════════════════════════════════════════
+let voices = [];
+let selectedVoice = null;
+let currentUtterance = null;
+let isPaused = false;
+
+function initVoices(){
+  voices = speechSynthesis.getVoices();
+  if(voices.length === 0){
+    speechSynthesis.onvoiceschanged = () => {
+      voices = speechSynthesis.getVoices();
+      pickVoice();
+    };
+  } else {
+    pickVoice();
+  }
+}
+
+function pickVoice(){
+  const preferred = [
+    'Google UK English Female',
+    'Microsoft Sonia',
+    'Microsoft Libby',
+    'Microsoft Aria',
+    'Microsoft Jenny',
+    'Samantha',
+    'Karen',
+    'Tessa',
+    'Moira'
+  ];
+  for(const name of preferred){
+    const v = voices.find(x => x.name.includes(name));
+    if(v){ selectedVoice = v; return; }
+  }
+  selectedVoice = voices.find(v => /en[-_]/i.test(v.lang) && /female|woman|girl|samantha|karen|sonia|aria|libby|jenny|moira|tessa/i.test(v.name))
+    || voices.find(v => /en[-_]/i.test(v.lang))
+    || voices[0];
+}
+
+function speak(text, callback){
+  if(!('speechSynthesis' in window)){
+    if(callback) setTimeout(callback, 1500);
+    return;
+  }
+  speechSynthesis.cancel();
+
+  // Split text by sentences for varied prosody
+  const segments = text.match(/[^.!?]+[.!?]?/g) || [text];
+
+  let idx = 0;
+  const speakNext = () => {
+    if(isPaused) return;
+    if(idx >= segments.length){
+      currentUtterance = null;
+      if(callback) callback();
+      return;
+    }
+    const seg = segments[idx].trim();
+    if(!seg){ idx++; speakNext(); return; }
+
+    const u = new SpeechSynthesisUtterance(seg);
+    if(selectedVoice) u.voice = selectedVoice;
+    u.lang = 'en-GB';
+
+    const isQuestion = /\?$/.test(seg);
+    const isExclaim = /!$/.test(seg);
+    const isEmphasis = /\b(great|wonderful|excellent|well done|amazing|fantastic|super|good job|yes|now|remember|let.s go|thinking caps?)\b/i.test(seg);
+
+    u.rate = 0.82;
+    if(isExclaim || isEmphasis) u.rate = 0.88;
+    if(seg.length < 10) u.rate = 0.78;
+
+    u.pitch = 1.15;
+    if(isQuestion) u.pitch = 1.25;
+    if(isExclaim || isEmphasis) u.pitch = 1.30;
+
+    u.volume = 1.0;
+
+    u.onend = () => { idx++; speakNext(); };
+    u.onerror = () => { idx++; speakNext(); };
+
+    currentUtterance = u;
+    speechSynthesis.speak(u);
+  };
+  speakNext();
+}
+
+function stopSpeech(){
+  speechSynthesis.cancel();
+  currentUtterance = null;
+}
+
+// ══════════════════════════════════════════════════════
+// PAUSE / PLAY (pause-aware setTimeout wrapper)
+// ══════════════════════════════════════════════════════
+let pauseTimeoutId = null;
+let pauseTimeoutCallback = null;
+let pauseTimeoutRemaining = 0;
+let pauseTimeoutStart = 0;
+
+function safeTimeout(callback, delay){
+  pauseTimeoutCallback = callback;
+  pauseTimeoutRemaining = delay;
+  pauseTimeoutStart = Date.now();
+  pauseTimeoutId = setTimeout(() => {
+    pauseTimeoutId = null;
+    pauseTimeoutCallback = null;
+    callback();
+  }, delay);
+}
+
+function togglePause(){
+  const btn = document.getElementById('pauseBtn');
+  const lbl = document.getElementById('pauseLabel');
+  if(!isPaused){
+    isPaused = true;
+    btn.textContent = '▶️';
+    btn.classList.add('paused');
+    lbl.textContent = 'Play';
+    if(speechSynthesis.speaking) speechSynthesis.pause();
+    if(pauseTimeoutId){
+      clearTimeout(pauseTimeoutId);
+      pauseTimeoutId = null;
+      const elapsed = Date.now() - pauseTimeoutStart;
+      pauseTimeoutRemaining = Math.max(0, pauseTimeoutRemaining - elapsed);
+    }
+  } else {
+    isPaused = false;
+    btn.textContent = '⏸️';
+    btn.classList.remove('paused');
+    lbl.textContent = 'Pause';
+    if(speechSynthesis.paused) speechSynthesis.resume();
+    if(pauseTimeoutCallback && pauseTimeoutRemaining > 0){
+      const cb = pauseTimeoutCallback;
+      const rem = pauseTimeoutRemaining;
+      pauseTimeoutCallback = null;
+      pauseTimeoutRemaining = 0;
+      pauseTimeoutId = setTimeout(() => {
+        pauseTimeoutId = null;
+        cb();
+      }, rem);
+      pauseTimeoutStart = Date.now();
+    }
+  }
+}
+
+function showPauseButton(){
+  document.getElementById('pauseBtn').style.display = 'block';
+  document.getElementById('pauseLabel').style.display = 'block';
+}
+
+// ══════════════════════════════════════════════════════
+// SCENE / SPEECH HELPERS
+// ══════════════════════════════════════════════════════
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  document.getElementById('scene-' + id).classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function setSpeech(text){
+  document.getElementById('speechText').textContent = text;
+}
+
+function say(text, callback){
+  setSpeech(text);
+  speak(text, callback);
+}
+
+function setProgress(pct){
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+// ══════════════════════════════════════════════════════
+// MAIN LESSON FLOW
+// ══════════════════════════════════════════════════════
+function beginLesson(){
+  // Mobile speech warm-up (must run synchronously inside this gesture)
+  try {
+    const warmup = new SpeechSynthesisUtterance(' ');
+    warmup.volume = 0;
+    warmup.rate = 1;
+    speechSynthesis.speak(warmup);
+  } catch(e){}
+
+  showPauseButton();
+  showScene('lesson');
+  setProgress(3);
+
+  // The opening welcome (from the prompt, word-for-word but slightly cleaned for speech)
+  document.getElementById('lessonTitle').textContent = 'Welcome to Revision!';
+  document.getElementById('lessonContent').innerHTML = `
+    <div style="text-align:center;padding:20px">
+      <div style="font-size:60px;margin-bottom:14px">🎓✨</div>
+      <p style="font-size:clamp(15px,2.5vw,19px);color:#0D47A1;line-height:1.7;font-weight:800">
+        Hello all our super stars!<br><br>
+        Are you ready to do revision?<br><br>
+        Mum or Dad, please help your child to read the instructions, and make sure that they try everything by themselves.<br><br>
+        Before you start your activities, tell Mum or Dad what you are going to do to get to your answer.<br><br>
+        Remember to put your thinking caps on!
+      </p>
+      <button class="next-btn" id="welcomeNext" style="display:none" onclick="goToActivity1()">Let's Go! ➡️</button>
+    </div>
+  `;
+
+  safeTimeout(() => {
+    say("Hello all our super stars! Are you ready to do revision? Mum or Dad, please help your child to read the instructions, and make sure that they try everything by themselves. Before you start your activities, tell Mum or Dad what you are going to do to get to your answer. Remember to put your thinking caps on! Let's go!", () => {
+      document.getElementById('welcomeNext').style.display = 'block';
+    });
+  }, 250);
+}
+
+// ══════════════════════════════════════════════════════
+// ACTIVITY 1 - NUMBER LINES (introduction)
+// ══════════════════════════════════════════════════════
+function goToActivity1(){
+  setProgress(10);
+  document.getElementById('lessonTitle').textContent = 'Activity 1: Number Lines';
+  document.getElementById('lessonContent').innerHTML = `
+    <div style="text-align:center;padding:20px">
+      <div style="font-size:50px;margin-bottom:10px">🔢</div>
+      <p style="font-size:clamp(14px,2.3vw,17px);color:#0D47A1;line-height:1.7;font-weight:700">
+        Let's start with <strong>number lines</strong>!<br><br>
+        Can you remember? We start by <strong>writing our sum</strong>.<br>
+        Then we use <strong style="color:#1976D2">BLUE</strong> for our first number — one big jump from <strong>0</strong> with an arrow.<br>
+        Then <strong style="color:#EC407A">PINK</strong> to <strong>count on</strong> or <strong>back</strong>, one hop at a time.<br>
+        Then we <strong>circle the answer</strong> and write it in the box. 🌟
+      </p>
+      <button class="next-btn" id="introNext" style="display:none" onclick="goToSum1()">Start ➡️</button>
+    </div>
+  `;
+  say("Let's start with number lines. Can you remember what to do? Can you remember that we start by writing our sum? Then we use blue for our first number. We start counting from zero to our first number with one big jump, and show our arrow. Then we use pink to count on, or back, one hop at a time. At the end we circle our answer, and write it into the box. Here we go!", () => {
+    document.getElementById('introNext').style.display = 'block';
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// ACTIVITY 1 — Sum 1: 4 + 3 (with prompts)
+// ══════════════════════════════════════════════════════
+function goToSum1(){
+  setProgress(20);
+  startNumberLineSum({
+    num1: 4,
+    num2: 3,
+    op: '+',
+    answer: 7,
+    title: 'Sum 1: 4 add 3',
+    showHints: true,
+    introText: "Four add three. Type your sum in the boxes.",
+    afterSumText: "Now you are going to bounce on the number line. Your first number is four. Tap on zero, and then on four.",
+    afterFirstNumText: "Well done! Now we have to count on three counts. We are going to hop three times, and count on while we hop. We are using pink now, and start from four. Tap on each number as you count. Remember to start at four. Tap on four first.",
+    afterCountText: "Great job! Now type your answer in the orange box!",
+    afterAnswerText: "Excellent! Four plus three equals seven. Well done!",
+    nextFn: goToSum2
+  });
+}
+
+// ── Sum 2: 5 − 3 (with prompts) ──────────────────────
+function goToSum2(){
+  setProgress(35);
+  startNumberLineSum({
+    num1: 5,
+    num2: 3,
+    op: '-',
+    answer: 2,
+    title: 'Sum 2: 5 take away 3',
+    showHints: true,
+    introText: "Five take away three. Type your sum in the boxes.",
+    afterSumText: "Now you are going to bounce on the number line. What colour are we using now? Tap on zero, and then on five.",
+    afterFirstNumText: "Well done! Tell Mum or Dad if you are counting on, or back, and which colour you have to use. Let's hop. Remember to tap on each number as you count. Start at five, so tap on five first.",
+    afterCountText: "Great job! Now type your answer in the orange box!",
+    afterAnswerText: "Excellent! Five minus three equals two. Well done!",
+    nextFn: goToSum3Intro
+  });
+}
+
+// ── Mid-message: now you try the last two by yourself
+function goToSum3Intro(){
+  setProgress(50);
+  document.getElementById('lessonTitle').textContent = 'Now Try by Yourself!';
+  document.getElementById('lessonContent').innerHTML = `
+    <div style="text-align:center;padding:20px">
+      <div style="font-size:50px;margin-bottom:10px">🌟</div>
+      <p style="font-size:clamp(15px,2.5vw,19px);color:#0D47A1;line-height:1.7;font-weight:800">
+        Now you try the <strong>last two sums by yourself</strong>!<br><br>
+        Mum or Dad, just check if your child can do it. 💪
+      </p>
+      <button class="next-btn" id="selfNext" style="display:none" onclick="goToSum3()">I'm Ready! ➡️</button>
+    </div>
+  `;
+  say("Now you try the last two sums by yourself! Mummy or Daddy, just check if your child can do it.", () => {
+    document.getElementById('selfNext').style.display = 'block';
+  });
+}
+
+// ── Sum 3: 7 − 3 (no prompts) ───────────────────────
+function goToSum3(){
+  setProgress(60);
+  startNumberLineSum({
+    num1: 7,
+    num2: 3,
+    op: '-',
+    answer: 4,
+    title: 'Sum 3: 7 take away 3',
+    showHints: false,
+    introText: "Seven take away three. Try it all by yourself!",
+    afterSumText: "Now bounce on the number line.",
+    afterFirstNumText: "Now count on the number line.",
+    afterCountText: "Now type your answer.",
+    afterAnswerText: "Excellent! Seven minus three equals four. Well done!",
+    nextFn: goToSum4
+  });
+}
+
+// ── Sum 4: 6 + 3 (no prompts) ───────────────────────
+function goToSum4(){
+  setProgress(72);
+  startNumberLineSum({
+    num1: 6,
+    num2: 3,
+    op: '+',
+    answer: 9,
+    title: 'Sum 4: 6 add 3',
+    showHints: false,
+    introText: "Six add three. Try it all by yourself!",
+    afterSumText: "Now bounce on the number line.",
+    afterFirstNumText: "Now count on the number line.",
+    afterCountText: "Now type your answer.",
+    afterAnswerText: "Excellent! Six plus three equals nine. Well done!",
+    nextFn: goToActivity2
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// NUMBER-LINE SUM ENGINE
+// (Same Bezier/tangent code as Plus/Minus videos.)
+//
+// IMPORTANT differences from Plus/Minus:
+//  - 2 attempts on the SUM input (was unlimited)
+//  - For incorrect taps: 2 chances on sums 1-2 only
+//    ("Oops, let's try one more time...") then auto-recover
+//  - The learner TYPES the final answer in an orange box
+//    (in the Plus/Minus videos the box auto-filled)
+//  - NO on-screen tap prompt below the number line
+//    (the prompt said: 'don't show the prompt at the bottom')
+// ══════════════════════════════════════════════════════
+function startNumberLineSum(cfg){
+  document.getElementById('lessonTitle').textContent = cfg.title;
+  // The operator is NOT shown to the child — they must work it out
+  // themselves from Miss Numby saying "add" or "take away".
+  document.getElementById('lessonContent').innerHTML = `
+    <div class="sum-display">
+      <input type="number" class="sum-input" id="sumA" min="0" max="9" inputmode="numeric">
+      <input type="text" class="sum-input sum-op-input" id="sumOp" maxlength="1" inputmode="text" autocomplete="off">
+      <input type="number" class="sum-input" id="sumB" min="0" max="9" inputmode="numeric">
+      <span class="sum-op">=</span>
+      <input type="number" class="answer-input" id="answerBoxA" min="0" max="20" inputmode="numeric" disabled>
+    </div>
+    <button class="go-btn" id="checkSumBtn" onclick="checkSum()">Check Sum ✓</button>
+    <div id="sumHint"></div>
+    <div class="numberline-wrap" id="actNL" style="display:none"></div>
+    <button class="go-btn" id="checkAnswerBtn" style="display:none" onclick="checkFinalAnswer()">Check Answer ✓</button>
+    <div id="answerHint"></div>
+    <button class="next-btn" id="nextActBtn" style="display:none">Continue ➡️</button>
+  `;
+
+  // Build expected tap sequence based on op
+  let expectedTaps = [cfg.num1];
+  for(let i = 0; i < cfg.num2; i++){
+    expectedTaps.push(cfg.op === '+' ? cfg.num1 + i + 1 : cfg.num1 - i - 1);
+  }
+
+  window.currentActivity = {
+    ...cfg,
+    sumChecked: false,
+    sumAttempts: 0,
+    blueDrawn: false,
+    expectedTaps: expectedTaps,
+    tapIdx: 0,
+    answerAttempts: 0,
+    tapMistakeCount: 0  // for sums 1-2 only, allow recovery
+  };
+
+  drawBlankNumberLine('actNL', 0, 10);
+
+  say(cfg.introText, () => {
+    document.getElementById('sumA').focus();
+  });
+}
+
+// ── Sum input checking (2 attempts) ─────────────────
+function checkSum(){
+  const act = window.currentActivity;
+  const a = parseInt(document.getElementById('sumA').value);
+  const b = parseInt(document.getElementById('sumB').value);
+  const opRaw = (document.getElementById('sumOp').value || '').trim();
+  // Accept both '-' and '−' (Unicode minus) for take away
+  const opNorm = opRaw.replace('−', '-');
+  const inputA = document.getElementById('sumA');
+  const inputB = document.getElementById('sumB');
+  const inputOp = document.getElementById('sumOp');
+
+  inputA.classList.remove('correct','wrong');
+  inputB.classList.remove('correct','wrong');
+  inputOp.classList.remove('correct','wrong');
+
+  const okA  = (a === act.num1);
+  const okB  = (b === act.num2);
+  const okOp = (opNorm === act.op);
+
+  if(okA && okB && okOp){
+    inputA.classList.add('correct');
+    inputB.classList.add('correct');
+    inputOp.classList.add('correct');
+    inputA.disabled = true;
+    inputB.disabled = true;
+    inputOp.disabled = true;
+    document.getElementById('checkSumBtn').style.display = 'none';
+    document.getElementById('sumHint').innerHTML = '';
+    act.sumChecked = true;
+    document.getElementById('actNL').style.display = 'block';
+
+    say(act.afterSumText, () => {
+      enableTapping();
+    });
+  } else {
+    act.sumAttempts++;
+    if(!okA)  inputA.classList.add('wrong');
+    if(!okB)  inputB.classList.add('wrong');
+    if(!okOp) inputOp.classList.add('wrong');
+
+    if(act.sumAttempts >= 2){
+      // Second mistake — auto-fill and move on. Mum/Dad has been
+      // asked to help, but we don't let the child get stuck.
+      safeTimeout(() => {
+        inputA.value = act.num1;
+        inputB.value = act.num2;
+        inputOp.value = (act.op === '+') ? '+' : '−';
+        inputA.classList.remove('wrong'); inputA.classList.add('correct');
+        inputB.classList.remove('wrong'); inputB.classList.add('correct');
+        inputOp.classList.remove('wrong'); inputOp.classList.add('correct');
+        inputA.disabled = true;
+        inputB.disabled = true;
+        inputOp.disabled = true;
+        document.getElementById('checkSumBtn').style.display = 'none';
+        document.getElementById('sumHint').innerHTML = '';
+        act.sumChecked = true;
+        document.getElementById('actNL').style.display = 'block';
+        say("Mum or Dad, please help your child. Let's move on to the number line.", () => {
+          enableTapping();
+        });
+      }, 1800);
+      document.getElementById('sumHint').innerHTML = '<div class="try-again-hint">Mum or Dad, please help. Let\'s move on.</div>';
+      say("Oops, let's try one more time. Mum or Dad, please assist your child this time.");
+    } else {
+      document.getElementById('sumHint').innerHTML = '<div class="try-again-hint">⚠️ Oops, think carefully! Try again.</div>';
+      say("Oops, think carefully. Mum or Dad, make sure your child types the correct sum.", () => {
+        safeTimeout(() => {
+          if(!okA)  { inputA.value  = ''; inputA.classList.remove('wrong'); }
+          if(!okB)  { inputB.value  = ''; inputB.classList.remove('wrong'); }
+          if(!okOp) { inputOp.value = ''; inputOp.classList.remove('wrong'); }
+          document.getElementById('sumHint').innerHTML = '';
+          inputA.focus();
+        }, 2200);
+      });
+    }
+  }
+}
+
+// ── Tap interaction on number line ──────────────────
+function enableTapping(){
+  const svg = document.querySelector('#actNL svg');
+  if(!svg) return;
+  svg.querySelectorAll('.nl-tap-circle').forEach(c => {
+    c.style.pointerEvents = 'auto';
+    c.addEventListener('click', handleTap);
+  });
+}
+
+function disableTapping(){
+  const svg = document.querySelector('#actNL svg');
+  if(!svg) return;
+  svg.querySelectorAll('.nl-tap-circle').forEach(c => {
+    c.style.pointerEvents = 'none';
+  });
+}
+
+function handleTap(e){
+  const act = window.currentActivity;
+  const num = parseInt(e.target.getAttribute('data-num'));
+
+  // NOTE: we never add a 'tapped' class to the tap circles, so no
+  // lingering orange/blue highlight stays on the number line. The
+  // blue and pink arcs themselves show what the child has done.
+  // We also never say "Oops!" on a wrong tap — wrong taps are
+  // silently ignored so the child can keep trying with Mum or
+  // Dad's help, without being interrupted by Miss Numby.
+
+  if(!act.blueDrawn){
+    // Phase 1: Tap 0, then tap num1
+    if(act.tapIdx === 0){
+      if(num === 0){
+        act.tapIdx = 1;
+      }
+      // wrong tap: silent, no penalty, child can keep trying
+    } else if(act.tapIdx === 1){
+      if(num === act.num1){
+        disableTapping();
+        animateBlueArc('actNL', 0, act.num1, () => {
+          act.blueDrawn = true;
+          act.tapIdx = 0;
+          say(act.afterFirstNumText, () => {
+            enableTapping();
+          });
+        });
+      }
+      // wrong tap: silent
+    }
+  } else {
+    // Phase 2: pink hops along expectedTaps
+    const expected = act.expectedTaps[act.tapIdx];
+    if(num === expected){
+      if(act.tapIdx === 0){
+        // First pink-phase tap is on num1 (the starting point) — no arc yet
+        act.tapIdx++;
+      } else {
+        const fromNum = act.expectedTaps[act.tapIdx - 1];
+        const toNum = num;
+        const isLastHop = (act.tapIdx === act.expectedTaps.length - 1);
+        disableTapping();
+        animatePinkArc('actNL', fromNum, toNum, isLastHop, () => {
+          act.tapIdx++;
+          if(act.tapIdx >= act.expectedTaps.length){
+            // Done with hops — circle the answer and ask child to TYPE the answer
+            safeTimeout(() => {
+              drawCircleAroundNumber('actNL', act.answer);
+              safeTimeout(() => {
+                say(act.afterCountText, () => {
+                  // Enable answer-input typing
+                  const ansBox = document.getElementById('answerBoxA');
+                  ansBox.disabled = false;
+                  ansBox.value = '';
+                  ansBox.focus();
+                  document.getElementById('checkAnswerBtn').style.display = 'block';
+                });
+              }, 600);
+            }, 400);
+          } else {
+            enableTapping();
+          }
+        });
+      }
+    }
+    // wrong tap: silent, child can keep trying
+  }
+}
+
+// ── Check the typed final answer ────────────────────
+function checkFinalAnswer(){
+  const act = window.currentActivity;
+  const ansBox = document.getElementById('answerBoxA');
+  const typed = parseInt(ansBox.value);
+  ansBox.classList.remove('correct','wrong');
+
+  if(typed === act.answer){
+    ansBox.classList.add('correct');
+    ansBox.disabled = true;
+    document.getElementById('checkAnswerBtn').style.display = 'none';
+    document.getElementById('answerHint').innerHTML = '';
+    say(act.afterAnswerText, () => {
+      document.getElementById('nextActBtn').style.display = 'block';
+      document.getElementById('nextActBtn').onclick = act.nextFn;
+    });
+  } else {
+    ansBox.classList.add('wrong');
+    act.answerAttempts++;
+    if(act.answerAttempts >= 2){
+      // Auto-correct on second wrong attempt
+      safeTimeout(() => {
+        ansBox.value = act.answer;
+        ansBox.classList.remove('wrong');
+        ansBox.classList.add('correct');
+        ansBox.disabled = true;
+        document.getElementById('checkAnswerBtn').style.display = 'none';
+        document.getElementById('answerHint').innerHTML = '';
+        say("Mum or Dad, please help. The answer is " + act.answer + ". Let's keep going.", () => {
+          document.getElementById('nextActBtn').style.display = 'block';
+          document.getElementById('nextActBtn').onclick = act.nextFn;
+        });
+      }, 1800);
+      document.getElementById('answerHint').innerHTML = '<div class="try-again-hint">Mum or Dad, please help.</div>';
+    } else {
+      document.getElementById('answerHint').innerHTML = '<div class="try-again-hint">⚠️ Oops, think carefully!</div>';
+      say("Oops, think carefully! Look at the number we circled in pink.", () => {
+        safeTimeout(() => {
+          ansBox.value = '';
+          ansBox.classList.remove('wrong');
+          document.getElementById('answerHint').innerHTML = '';
+          ansBox.focus();
+        }, 2000);
+      });
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// NUMBER LINE DRAWING (same as Plus/Minus videos)
+// ══════════════════════════════════════════════════════
+function drawBlankNumberLine(containerId, minN, maxN){
+  const container = document.getElementById(containerId);
+  const nNumbers = maxN - minN + 1;
+  const leftPad = 40;
+  const rightPad = 40;
+  const topPad = 100;
+  const bottomPad = 50;
+  const width = 700;
+  const height = topPad + bottomPad + 20;
+  const lineY = topPad;
+  const usableW = width - leftPad - rightPad;
+  const spacing = usableW / (nNumbers - 1);
+
+  let svg = `<svg class="numberline-svg" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">`;
+
+  svg += `<defs>
+    <marker id="arrowL_${containerId}" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M10,0 L0,5 L10,10 z" fill="#1A1A1A"/>
+    </marker>
+    <marker id="arrowR_${containerId}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1A1A1A"/>
+    </marker>
+  </defs>`;
+
+  const lineStart = leftPad - 20;
+  const lineEnd = width - rightPad + 20;
+  svg += `<line class="nl-axis" x1="${lineStart}" y1="${lineY}" x2="${lineEnd}" y2="${lineY}" marker-start="url(#arrowL_${containerId})" marker-end="url(#arrowR_${containerId})"/>`;
+
+  for(let i = 0; i < nNumbers; i++){
+    const n = minN + i;
+    const x = leftPad + spacing * i;
+    svg += `<line class="nl-tick" x1="${x}" y1="${lineY - 10}" x2="${x}" y2="${lineY + 10}"/>`;
+    svg += `<text class="nl-num" x="${x}" y="${lineY + 32}">${n}</text>`;
+    svg += `<circle class="nl-tap-circle" cx="${x}" cy="${lineY}" r="22" data-num="${n}" style="pointer-events:none"/>`;
+  }
+
+  svg += `<g id="arcs_${containerId}"></g>`;
+  svg += `</svg>`;
+  container.innerHTML = svg;
+  container._nlInfo = { leftPad, lineY, spacing, minN, maxN, width, height };
+}
+
+function getNumberX(containerId, num){
+  const info = document.getElementById(containerId)._nlInfo;
+  return info.leftPad + info.spacing * (num - info.minN);
+}
+
+function getLineY(containerId){
+  return document.getElementById(containerId)._nlInfo.lineY;
+}
+
+function animateBlueArc(containerId, from, to, callback){
+  const x1 = getNumberX(containerId, from);
+  const x2 = getNumberX(containerId, to);
+  const y = getLineY(containerId);
+  const dist = Math.abs(to - from);
+  const arcHeight = Math.min(70, 18 + dist * 8);
+  const cx = (x1 + x2) / 2;
+  const cyControl = y - arcHeight - arcHeight*0.4;
+
+  const tEnd = 0.93;
+  const oneMt = 1 - tEnd;
+  const endX = oneMt*oneMt*x1 + 2*oneMt*tEnd*cx + tEnd*tEnd*x2;
+  const endY = oneMt*oneMt*y + 2*oneMt*tEnd*cyControl + tEnd*tEnd*y;
+
+  const tangentX = 2*oneMt*(cx - x1) + 2*tEnd*(x2 - cx);
+  const tangentY = 2*oneMt*(cyControl - y) + 2*tEnd*(y - cyControl);
+  const tangentLen = Math.sqrt(tangentX*tangentX + tangentY*tangentY);
+  const ux = tangentX / tangentLen;
+  const uy = tangentY / tangentLen;
+  const px = -uy;
+  const py = ux;
+
+  const d = `M ${x1} ${y} Q ${cx} ${cyControl} ${endX} ${endY}`;
+  const dx = x2 - x1;
+  const len = Math.PI * Math.sqrt((dx*dx)/2 + arcHeight*arcHeight) * 0.7;
+
+  const arcsG = document.getElementById('arcs_' + containerId);
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const path = document.createElementNS(ns, 'path');
+  path.setAttribute('d', d);
+  path.setAttribute('class', 'nl-blue-arc draw');
+  path.style.setProperty('--len', len);
+  arcsG.appendChild(path);
+
+  const tipX = x2;
+  const tipY = y - 1;
+  const arrowLen = 12;
+  const arrowWidth = 8;
+  const baseX = tipX - ux * arrowLen;
+  const baseY = tipY - uy * arrowLen;
+  const leftX = baseX + px * arrowWidth;
+  const leftY = baseY + py * arrowWidth;
+  const rightX = baseX - px * arrowWidth;
+  const rightY = baseY - py * arrowWidth;
+
+  const arrowhead = document.createElementNS(ns, 'path');
+  arrowhead.setAttribute('d', `M ${tipX} ${tipY} L ${leftX} ${leftY} L ${rightX} ${rightY} Z`);
+  arrowhead.setAttribute('class', 'nl-arrowhead-blue appear');
+  arcsG.appendChild(arrowhead);
+
+  safeTimeout(() => { if(callback) callback(); }, 1100);
+}
+
+function animatePinkArc(containerId, from, to, isLast, callback){
+  const x1 = getNumberX(containerId, from);
+  const x2 = getNumberX(containerId, to);
+  const y = getLineY(containerId);
+  const arcHeight = 28;
+  const cx = (x1 + x2) / 2;
+  const cyControl = y - arcHeight - arcHeight*0.4;
+
+  const tEnd = isLast ? 0.88 : 1.0;
+  const oneMt = 1 - tEnd;
+  const endX = oneMt*oneMt*x1 + 2*oneMt*tEnd*cx + tEnd*tEnd*x2;
+  const endY = oneMt*oneMt*y + 2*oneMt*tEnd*cyControl + tEnd*tEnd*y;
+
+  const d = `M ${x1} ${y} Q ${cx} ${cyControl} ${endX} ${endY}`;
+  const dx = x2 - x1;
+  const len = Math.PI * Math.sqrt((dx*dx)/2 + arcHeight*arcHeight) * 0.7;
+
+  const arcsG = document.getElementById('arcs_' + containerId);
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const path = document.createElementNS(ns, 'path');
+  path.setAttribute('d', d);
+  path.setAttribute('class', 'nl-pink-arc draw');
+  path.style.setProperty('--len', len);
+  arcsG.appendChild(path);
+
+  if(isLast){
+    const tangentX = 2*oneMt*(cx - x1) + 2*tEnd*(x2 - cx);
+    const tangentY = 2*oneMt*(cyControl - y) + 2*tEnd*(y - cyControl);
+    const tangentLen = Math.sqrt(tangentX*tangentX + tangentY*tangentY);
+    const ux = tangentX / tangentLen;
+    const uy = tangentY / tangentLen;
+    const px = -uy;
+    const py = ux;
+
+    const tipX = x2;
+    const tipY = y - 1;
+    const arrowLen = 10;
+    const arrowWidth = 6.5;
+    const baseX = tipX - ux * arrowLen;
+    const baseY = tipY - uy * arrowLen;
+    const leftX = baseX + px * arrowWidth;
+    const leftY = baseY + py * arrowWidth;
+    const rightX = baseX - px * arrowWidth;
+    const rightY = baseY - py * arrowWidth;
+
+    const arrowhead = document.createElementNS(ns, 'path');
+    arrowhead.setAttribute('d', `M ${tipX} ${tipY} L ${leftX} ${leftY} L ${rightX} ${rightY} Z`);
+    arrowhead.setAttribute('class', 'nl-arrowhead-pink appear-quick');
+    arcsG.appendChild(arrowhead);
+  }
+
+  safeTimeout(() => { if(callback) callback(); }, 750);
+}
+
+function drawCircleAroundNumber(containerId, num){
+  const x = getNumberX(containerId, num);
+  const info = document.getElementById(containerId)._nlInfo;
+  const y = info.lineY + 32;
+  const arcsG = document.getElementById('arcs_' + containerId);
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const circle = document.createElementNS(ns, 'ellipse');
+  circle.setAttribute('cx', x);
+  circle.setAttribute('cy', y - 5);
+  circle.setAttribute('rx', 14);
+  circle.setAttribute('ry', 13);
+  circle.setAttribute('class', 'nl-circle-answer draw');
+  arcsG.appendChild(circle);
+}
+
+// ══════════════════════════════════════════════════════
+// ACTIVITY 2 — ODD / EVEN
+// Tap all the even numbers.
+// Order: 4, 7, 3, 6, 2, 1, 8, 5, 10, 9
+// Even → green and stays green
+// Odd → red and stays red (no second chance)
+// Activity ends when all evens have been tapped.
+// ══════════════════════════════════════════════════════
+function goToActivity2(){
+  setProgress(80);
+  document.getElementById('lessonTitle').textContent = 'Activity 2: Odd &amp; Even Numbers';
+
+  // Number order from the prompt
+  const numberOrder = [4, 7, 3, 6, 2, 1, 8, 5, 10, 9];
+  // Stash on window for the handler
+  window.oddEvenState = {
+    numbers: numberOrder,
+    tappedEvens: new Set(),
+    totalEvens: numberOrder.filter(n => n % 2 === 0).length,
+    finished: false,
+    onFinish: goToActivity3
+  };
+
+  let boxesHtml = '<div class="oddeven-grid" id="oeGrid">';
+  numberOrder.forEach((n, i) => {
+    boxesHtml += `<div class="oe-box" data-num="${n}" onclick="oeTap(this)">${n}</div>`;
+  });
+  boxesHtml += '</div>';
+
+  document.getElementById('lessonContent').innerHTML = `
+    <div style="text-align:center;padding:6px">
+      <p style="font-size:clamp(14px,2.3vw,17px);color:#0D47A1;line-height:1.6;font-weight:700;margin-bottom:8px">
+        Tap on all the <strong style="color:#43A047">EVEN</strong> numbers!<br>
+        Remember — every friend has a <strong>partner</strong>. 👫
+      </p>
+      ${boxesHtml}
+      <div class="oe-status" id="oeStatus">Found 0 of ${window.oddEvenState.totalEvens} even numbers</div>
+      <button class="next-btn" id="oeNext" style="display:none">Continue ➡️</button>
+    </div>
+  `;
+
+  say("Now we are going to tap on all the even numbers. Can you remember what an even number is? Can you remember that each friend has a partner? Now tap on all the numbers that are even.");
+}
+
+function oeTap(boxEl){
+  const state = window.oddEvenState;
+  if(state.finished) return;
+  if(boxEl.classList.contains('correct') || boxEl.classList.contains('wrong')) return;
+
+  const n = parseInt(boxEl.getAttribute('data-num'));
+  const isEven = (n % 2 === 0);
+
+  if(isEven){
+    boxEl.classList.add('correct');
+    state.tappedEvens.add(n);
+    document.getElementById('oeStatus').textContent =
+      `Found ${state.tappedEvens.size} of ${state.totalEvens} even numbers`;
+
+    if(state.tappedEvens.size === state.totalEvens){
+      // All evens tapped — finished
+      state.finished = true;
+      document.getElementById('oeStatus').textContent = `🎉 Well done! You found all the even numbers!`;
+      say("Wonderful! You found all the even numbers!", () => {
+        document.getElementById('oeNext').style.display = 'block';
+        document.getElementById('oeNext').onclick = state.onFinish;
+      });
+    }
+  } else {
+    // Odd number — red, stays red, no second chance for that box
+    boxEl.classList.add('wrong');
+    say("Oops! That number is odd.");
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// ACTIVITY 3 — DOUBLING
+// Numbers in order: 4, 1, 5, 3, 2
+// Each has an arrow and a typeable answer box.
+// One try only. Then "Check Answers" reveals green / red.
+// ══════════════════════════════════════════════════════
+function goToActivity3(){
+  setProgress(92);
+  document.getElementById('lessonTitle').textContent = 'Activity 3: Doubling';
+
+  const nums = [4, 1, 5, 3, 2];
+  window.doubleState = {
+    numbers: nums,
+    checked: false
+  };
+
+  let rowsHtml = '<div class="double-list">';
+  nums.forEach((n, i) => {
+    rowsHtml += `
+      <div class="double-row">
+        <div class="double-num">${n}</div>
+        <div class="double-arrow">➡️</div>
+        <input type="number" class="double-input" id="dbl-${i}" data-num="${n}" min="0" inputmode="numeric" maxlength="2">
+      </div>
+    `;
+  });
+  rowsHtml += '</div>';
+
+  document.getElementById('lessonContent').innerHTML = `
+    <div class="double-instruction">✋ Double these numbers</div>
+    <p style="text-align:center;font-size:clamp(13px,2.2vw,16px);color:#0D47A1;font-weight:700;line-height:1.5">
+      Use your <strong>fingers</strong>! Type your answer in the orange box.
+    </p>
+    ${rowsHtml}
+    <button class="go-btn" id="dblCheckBtn" onclick="checkDoubles()">Check Answers ✓</button>
+    <div id="dblFeedback" style="text-align:center;margin-top:14px;font-size:clamp(14px,2.3vw,17px);font-weight:800;color:#0D47A1"></div>
+    <button class="next-btn" id="dblNext" style="display:none" onclick="goToResults()">Finish ⭐</button>
+  `;
+
+  say("Can you tell Mum or Dad what you have to do when you double a number? Remember to use your fingers! Here we go.");
+  // focus the first input
+  safeTimeout(() => {
+    const first = document.getElementById('dbl-0');
+    if(first) first.focus();
+  }, 600);
+}
+
+function checkDoubles(){
+  const state = window.doubleState;
+  if(state.checked) return;
+  state.checked = true;
+
+  let correct = 0;
+  state.numbers.forEach((n, i) => {
+    const inp = document.getElementById('dbl-' + i);
+    inp.disabled = true;
+    const typed = parseInt(inp.value);
+    const expected = n * 2;
+    if(typed === expected){
+      inp.classList.add('correct');
+      correct++;
+    } else {
+      inp.classList.add('wrong');
+    }
+  });
+  document.getElementById('dblCheckBtn').style.display = 'none';
+
+  const total = state.numbers.length;
+  let msg, voiceLine;
+  if(correct === total){
+    msg = `⭐ Perfect! You got all ${total} correct! ⭐`;
+    voiceLine = `Wonderful! You got all the doubles correct!`;
+  } else if(correct >= 3){
+    msg = `Well done! You got ${correct} out of ${total} correct.`;
+    voiceLine = `Well done! You got ${correct} out of ${total} correct. Mum or Dad, please look at the red ones with your child.`;
+  } else {
+    msg = `You got ${correct} out of ${total} correct.`;
+    voiceLine = `You got ${correct} out of ${total} correct. Mum or Dad, please look at the red ones with your child. You can do this activity again to practise.`;
+  }
+  document.getElementById('dblFeedback').textContent = msg;
+  say(voiceLine, () => {
+    document.getElementById('dblNext').style.display = 'block';
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// RESULTS
+// ══════════════════════════════════════════════════════
+function goToResults(){
+  setProgress(100);
+  showScene('results');
+  say("Wonderful work today, super star! Mum or Dad, please go through any answers that were incorrect with your child, and let them do this activity again to practise some more. Practice every day for a few minutes works best. Well done!");
+}
+
+window.addEventListener('beforeunload', () => {
+  speechSynthesis.cancel();
+});
+</script>
+</body>
+</html>
